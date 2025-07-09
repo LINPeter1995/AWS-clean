@@ -48,11 +48,11 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   subnet_ids      = module.vpc.public_subnets
 
-  create_kms_key = false
+  create_kms_key = true
 
   cluster_encryption_config = [{
-    resources = ["secrets"]
-    provider  = aws_kms_key.eks_key.arn
+  resources = ["secrets"]
+  provider  = aws_kms_key.eks_key.arn
   }]
 
   eks_managed_node_groups = {
@@ -80,41 +80,6 @@ resource "aws_kms_key" "eks_key" {
 resource "aws_kms_alias" "eks_key_alias" {
   name          = "alias/eks-key"
   target_key_id = aws_kms_key.eks_key.key_id
-}
-
-# 將 IAM role 授權給 EKS 使用你的 KMS 金鑰
-resource "aws_kms_key_policy" "eks_key_policy" {
-  key_id = aws_kms_key.eks_key.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Id      = "key-default-1",
-    Statement = [
-      {
-        Sid       = "Allow administration of the key",
-        Effect    = "Allow",
-        Principal = {
-          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-        },
-        Action    = "kms:*",
-        Resource  = "*"
-      },
-      {
-        Sid      = "Allow EKS to use the key",
-        Effect   = "Allow",
-        Principal = {
-          Service = "eks.amazonaws.com"
-        },
-        Action = [
-          "kms:Encrypt",
-          "kms:Decrypt",
-          "kms:GenerateDataKey*",
-          "kms:DescribeKey"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
 }
 
 data "aws_caller_identity" "current" {}

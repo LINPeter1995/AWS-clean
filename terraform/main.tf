@@ -48,13 +48,11 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   subnet_ids      = module.vpc.public_subnets
 
-    create_kms_key = true
+  create_kms_key = true
 
   cluster_encryption_config = [{
     resources = ["secrets"]
-    provider  = aws_kms_key.eks_key.arn
   }]
-  
 
   eks_managed_node_groups = {
     default = {
@@ -70,6 +68,7 @@ module "eks" {
   cloudwatch_log_group_retention_in_days = 0
   attach_cluster_encryption_policy       = true
 }
+
 
 resource "aws_kms_key" "eks_key" {
   description             = "KMS key for EKS cluster secrets encryption"

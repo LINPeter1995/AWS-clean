@@ -48,15 +48,16 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   subnet_ids      = module.vpc.public_subnets
 
-  # 使用你自己創建的 KMS 金鑰
-  cluster_encryption_config = {
-    resources = ["secrets"]
-    provider  = "aws"
-    key_arn   = aws_kms_key.eks_key.arn
-  }
-
-  # 將模組自動建立 KMS 金鑰功能關閉
   create_kms_key = false
+
+  cluster_encryption_config = [
+    {
+      resources = ["secrets"]
+      provider = {
+        key_arn = aws_kms_key.eks_key.arn
+      }
+    }
+  ]
 
   eks_managed_node_groups = {
     default = {

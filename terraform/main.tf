@@ -50,14 +50,10 @@ module "eks" {
 
   create_kms_key = false
 
-  cluster_encryption_config = [
-    {
-      resources = ["secrets"]
-      provider = {
-        key_arn = aws_kms_key.eks_key.arn
-      }
-    }
-  ]
+  cluster_encryption_config = [{
+    resources = ["secrets"]
+    provider  = aws_kms_key.eks_key.arn
+  }]
 
   eks_managed_node_groups = {
     default = {
@@ -79,6 +75,7 @@ resource "aws_kms_key" "eks_key" {
   deletion_window_in_days = 10
   enable_key_rotation     = true
 }
+
 
 resource "aws_kms_alias" "eks_key_alias" {
   name          = "alias/eks-key"

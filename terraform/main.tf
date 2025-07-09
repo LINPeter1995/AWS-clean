@@ -70,25 +70,29 @@ module "eks" {
 
 
 resource "aws_kms_key" "eks_key" {
-  description             = "KMS key for EKS cluster logs"
+  description              = "KMS key for EKS cluster logs"
   deletion_window_in_days = 10
-  enable_key_rotation     = true
+  enable_key_rotation      = true
 }
 
 resource "aws_kms_alias" "cluster_alias" {
   name          = "alias/eks/my-eks-cluster"
   target_key_id = aws_kms_key.eks_key.key_id
-    lifecycle {
+
+  lifecycle {
     prevent_destroy = true
-    }
+    ignore_changes  = [name] # 忽略 alias 已存在的狀況
+  }
 }
 
 resource "aws_cloudwatch_log_group" "eks_log_group" {
   name              = "/aws/eks/my-eks-cluster/cluster"
   retention_in_days = 7
+
   lifecycle {
     prevent_destroy = true
-    }
+    ignore_changes  = [name] # 忽略已存在 log group
+  }
 }
 
 data "aws_eks_cluster" "cluster" {

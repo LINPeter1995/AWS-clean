@@ -37,10 +37,10 @@ jobs:
         run: terraform refresh -var="iam_role=GitHubTerraformDeployRole"
 
 
-      # 或這段是要先 destroy，保證環境乾淨
-      # - name: Terraform destroy
-      #   working-directory: terraform
-      #   run: terraform destroy -auto-approve
+      # If you want to destroy first to ensure a clean environment, uncomment the following step:
+      - name: Terraform destroy
+        working-directory: terraform
+        run: terraform destroy -auto-approve
 
       - name: Terraform apply
         working-directory: terraform

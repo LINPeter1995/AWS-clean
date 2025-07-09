@@ -19,9 +19,8 @@ terraform {
 
 provider "aws" {
   region = "ap-northeast-1"
+  profile = "terraform-user"
 }
-
-data "aws_caller_identity" "current" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -48,10 +47,17 @@ module "eks" {
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.31"
   vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.public_subnets
 
-  subnet_ids = module.vpc.public_subnets
+  # 使用你自己創建的 KMS 金鑰
+  cluster_encryption_config = {
+    resources = ["secrets"]
+    provider  = "aws"
+    key_arn   = aws_kms_key.eks_key.arn
+  }
 
-  create_kms_key = true
+  # 將模組自動建立 KMS 金鑰功能關閉
+  create_kms_key = false
 
   eks_managed_node_groups = {
     default = {
@@ -65,24 +71,64 @@ module "eks" {
 
   create_cloudwatch_log_group             = false
   cloudwatch_log_group_retention_in_days = 0
-  attach_cluster_encryption_policy = false
+  attach_cluster_encryption_policy       = true
 }
 
 resource "aws_kms_key" "eks_key" {
-  description              = "KMS key for EKS cluster logs"
+  description             = "KMS key for EKS cluster secrets encryption"
   deletion_window_in_days = 10
-  enable_key_rotation      = true
+  enable_key_rotation     = true
 }
 
-data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_name
+resource "aws_kms_alias" "eks_key_alias" {
+  name          = "alias/eks-key"
+  target_key_id = aws_kms_key.eks_key.key_id
+}
 
+# 將 IAM role 授權給 EKS 使用你的 KMS 金鑰
+resource "aws_kms_key_policy" "eks_key_policy" {
+  key_id = aws_kms_key.eks_key.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Id      = "key-default-1",
+    Statement = [
+      {
+        Sid       = "Allow administration of the key",
+        Effect    = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action    = "kms:*",
+        Resource  = "*"
+      },
+      {
+        Sid      = "Allow EKS to use the key",
+        Effect   = "Allow",
+        Principal = {
+          Service = "eks.amazonaws.com"
+        },
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_eks_cluster" "cluster" {
+  name       = module.eks.cluster_name
   depends_on = [module.eks]
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = data.aws_eks_cluster.cluster.name
-
+  name       = data.aws_eks_cluster.cluster.name
   depends_on = [module.eks]
 }
 

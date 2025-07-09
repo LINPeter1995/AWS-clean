@@ -50,11 +50,6 @@ module "eks" {
 
   create_kms_key = true
 
-  cluster_encryption_config = [{
-    resources = ["secrets"]
-    provider_key_arn = aws_kms_key.eks_key.arn
-  }]
-
   eks_managed_node_groups = {
     default = {
       desired_size   = 1

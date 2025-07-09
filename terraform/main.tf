@@ -72,10 +72,9 @@ resource "aws_kms_key" "eks_key" {
   enable_key_rotation     = true
 }
 
-
-resource "aws_kms_alias" "eks_key_alias" {
-  name          = "alias/eks-key"
-  target_key_id = aws_kms_key.eks_key.key_id
+resource "aws_kms_alias" "this" {
+  name          = "alias/eks/my-eks-cluster-${random_id.suffix.hex}"
+  target_key_id = aws_kms_key.this.id
 }
 
 data "aws_caller_identity" "current" {}

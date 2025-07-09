@@ -19,7 +19,6 @@ terraform {
 
 provider "aws" {
   region = "ap-northeast-1"
-  profile = "terraform-user"
 }
 
 module "vpc" {

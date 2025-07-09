@@ -52,6 +52,7 @@ module "eks" {
 
   cluster_encryption_config = [{
     resources = ["secrets"]
+    provider_key_arn = aws_kms_key.eks_key.arn
   }]
 
   eks_managed_node_groups = {

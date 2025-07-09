@@ -66,8 +66,8 @@ module "eks" {
 }
 
 
-resource "aws_kms_key" "eks_key" {
-  description             = "KMS key for EKS cluster secrets encryption"
+resource "aws_kms_key" "this" {
+  description             = "KMS key for EKS"
   deletion_window_in_days = 10
   enable_key_rotation     = true
 }

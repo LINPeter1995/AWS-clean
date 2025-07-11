@@ -39,7 +39,7 @@ variable "password" {
   description = "The password of the RDS database"
   type        = string
   sensitive   = true
-  default     = "1234"
+  default     = "12345678"
 }
 
 

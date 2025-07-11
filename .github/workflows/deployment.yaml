@@ -36,21 +36,14 @@ jobs:
         working-directory: terraform
         run: |
           terraform validate
-          terraform plan \
-            -var="iam_role=GitHubTerraformDeployRole" \
-            -var="db_name=${{ secrets.DB_NAME }}" \
-            -var="username=${{ secrets.DB_USERNAME }}" \
-            -var="password=${{ secrets.RDS_PASSWORD }}"
+          terraform plan
+
 
       - name: Terraform validate and apply
         working-directory: terraform
         run: |
           terraform validate
-          terraform apply -auto-approve \
-          -var="iam_role=GitHubTerraformDeployRole" \
-          -var="db_name=${{ secrets.DB_NAME }}" \
-          -var="username=${{ secrets.DB_USERNAME }}" \
-          -var="password=${{ secrets.RDS_PASSWORD }}"
+          terraform apply -auto-approve
 
       # - name: Terraform destroy
       #   working-directory: terraform

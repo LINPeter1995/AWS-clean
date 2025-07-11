@@ -32,8 +32,15 @@ jobs:
         working-directory: terraform
         run: terraform init
 
-      - name: Debug terraform.tfvars
-        run: cat terraform/terraform.tfvars | grep -v password
+      - name: Create terraform.tfvars from secrets
+        run: |
+          mkdir -p terraform
+          cat <<EOF > terraform/terraform.tfvars
+          db_name  = "${{ secrets.DB_NAME }}"
+          username = "${{ secrets.DB_USERNAME }}"
+          password = "${{ secrets.RDS_PASSWORD }}"
+          iam_role = "GitHubTerraformDeployRole"
+          EOF
 
       - name: Terraform validate and plan
         working-directory: terraform

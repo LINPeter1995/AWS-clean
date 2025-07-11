@@ -36,11 +36,15 @@ jobs:
         working-directory: terraform
         run: terraform validate
 
-      - name: Terraform plan and apply
+      # - name: Terraform plan and apply
+      #   working-directory: terraform
+      #   run: |
+      #         terraform plan 
+      #         terraform apply -auto-approve
+
+      - name: Terraform destroy
         working-directory: terraform
-        run: |
-              terraform plan 
-              terraform apply -auto-approve
+        run: terraform destroy -auto-approve
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v3

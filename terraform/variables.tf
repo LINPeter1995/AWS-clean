@@ -25,6 +25,7 @@ variable "iam_role" {
 variable "db_name" {
   type        = string
   description = "The name of the RDS database"
+  default     = "aws_postgres_db"
 }
 
 variable "username" {

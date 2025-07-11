@@ -28,10 +28,6 @@ jobs:
         with:
           terraform_version: 1.8.3
 
-      - name: Terraform destroy
-        working-directory: terraform
-        run: terraform destroy -auto-approve
-
       - name: Terraform init
         working-directory: terraform
         run: terraform init
@@ -47,6 +43,10 @@ jobs:
       - name: Terraform apply
         working-directory: terraform
         run: terraform apply -auto-approve
+
+      # - name: Terraform destroy
+      #   working-directory: terraform
+      #   run: terraform destroy -auto-approve
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v3

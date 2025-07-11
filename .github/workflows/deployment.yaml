@@ -42,9 +42,9 @@ jobs:
         working-directory: terraform
         run: terraform destroy -auto-approve
 
-      - name: Terraform apply
-        working-directory: terraform
-        run: terraform apply -auto-approve
+      # - name: Terraform apply
+      #   working-directory: terraform
+      #   run: terraform apply -auto-approve
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v3

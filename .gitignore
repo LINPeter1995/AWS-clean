@@ -1,4 +1,7 @@
 .env
 /target/
 terraform/.terraform/
+terraform.tfvars
+*.tfstate
+*.tfstate.backup
 

@@ -122,11 +122,21 @@ resource "aws_db_instance" "postgres" {
   engine               = "postgres"
   engine_version       = "15"
   instance_class       = "db.t3.micro"
-  db_name              = "your_db_name"
-  username             = "your_username"
-  password             = "your_password"
+  db_name              = var.db_name
+  username             = var.username
+  password             = var.password
   parameter_group_name = "default.postgres15"
   skip_final_snapshot  = true
+  db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
+}
+
+
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "rds-subnet-group"
+  subnet_ids = slice(module.vpc.public_subnets, 0, 2)
+  tags = {
+    Name = "RDS subnet group"
+  }
 }
 
 resource "kubernetes_deployment" "my_app" {

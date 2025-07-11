@@ -22,3 +22,18 @@ variable "iam_role" {
   default     = "GitHubTerraformDeployRole"
 }
 
+variable "db_name" {
+  type        = string
+  description = "The name of the RDS database"
+}
+
+variable "username" {
+  type        = string
+  description = "Master username for RDS"
+}
+
+variable "password" {
+  type        = string
+  description = "Master password for RDS"
+  sensitive   = true
+}

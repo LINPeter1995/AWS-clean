@@ -38,11 +38,19 @@ jobs:
 
       - name: Terraform plan
         working-directory: terraform
-        run: terraform plan -var="iam_role=GitHubTerraformDeployRole"
+        run: terraform plan \
+          -var="iam_role=GitHubTerraformDeployRole" \
+          -var="db_name=${{ secrets.DB_NAME }}" \
+          -var="username=${{ secrets.DB_USERNAME }}" \
+          -var="password=${{ secrets.DB_PASSWORD }}"
 
       - name: Terraform apply
         working-directory: terraform
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve \
+          -var="iam_role=GitHubTerraformDeployRole" \
+          -var="db_name=${{ secrets.DB_NAME }}" \
+          -var="username=${{ secrets.DB_USERNAME }}" \
+          -var="password=${{ secrets.DB_PASSWORD }}"
 
       # - name: Terraform destroy
       #   working-directory: terraform

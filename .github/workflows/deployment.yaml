@@ -52,7 +52,6 @@ jobs:
           -var="username=${{ secrets.DB_USERNAME }}" \
           -var="password=${{ secrets.RDS_PASSWORD }}"
 
-
       # - name: Terraform destroy
       #   working-directory: terraform
       #   run: terraform destroy -auto-approve

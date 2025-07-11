@@ -31,10 +31,13 @@ variable "db_name" {
 variable "username" {
   type        = string
   description = "Master username for RDS"
+  default     = "aws_postgres_db"
 }
 
 variable "password" {
-  type        = string
   description = "Master password for RDS"
+  type        = string
   sensitive   = true
 }
+
+

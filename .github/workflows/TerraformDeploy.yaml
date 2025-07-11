@@ -1,0 +1,70 @@
+name: Terraform Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::129271359144:role/GitHubTerraformDeployRole
+          aws-region: ap-northeast-1
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.3
+
+      - name: Create terraform.tfvars from secrets
+        run: |
+          mkdir -p terraform
+          echo "db_name  = \"${{ secrets.DB_NAME }}\"" > terraform/terraform.tfvars
+          echo "username = \"${{ secrets.DB_USERNAME }}\"" >> terraform/terraform.tfvars
+          echo "password = \"${{ secrets.RDS_PASSWORD }}\"" >> terraform/terraform.tfvars
+          echo "iam_role = \"GitHubTerraformDeployRole\"" >> terraform/terraform.tfvars
+
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform validate
+        working-directory: terraform
+        run: terraform validate
+
+      - name: Terraform plan
+        working-directory: terraform
+        run: terraform plan -var-file=terraform.tfvars
+
+      - name: Terraform apply
+        working-directory: terraform
+        run: terraform apply -auto-approve -var-file=terraform.tfvars
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig \
+          --region ap-northeast-1 \
+          --name my-eks-cluster
+
+      - name: Apply aws-auth ConfigMap
+        run: kubectl apply -f k8s/aws-auth.yaml
+
+      - name: Validate kubectl connection
+        run: kubectl get nodes

@@ -28,10 +28,6 @@ jobs:
         with:
           terraform_version: 1.8.3
 
-      - name: Terraform validate
-        working-directory: terraform
-        run: terraform validate
-
       - name: Terraform destroy
         working-directory: terraform
         run: terraform destroy -auto-approve
@@ -39,6 +35,10 @@ jobs:
       - name: Terraform init
         working-directory: terraform
         run: terraform init
+
+      - name: Terraform validate
+        working-directory: terraform
+        run: terraform validate
 
       - name: Terraform plan
         working-directory: terraform

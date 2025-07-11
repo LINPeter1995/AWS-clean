@@ -1,4 +1,4 @@
-name: Terraform Deploy
+name: Configure AWS Credentials via OIDC
 
 on:
   push:

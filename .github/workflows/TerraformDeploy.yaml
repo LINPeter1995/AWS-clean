@@ -33,8 +33,8 @@ jobs:
           mkdir -p terraform
           echo "db_name  = \"${{ secrets.DB_NAME }}\"" > terraform/terraform.tfvars
           echo "username = \"${{ secrets.DB_USERNAME }}\"" >> terraform/terraform.tfvars
-          echo "password = \"${{ secrets.RDS_PASSWORD }}\"" >> terraform/terraform.tfvars
-          echo "iam_role = \"GitHubTerraformDeployRole\"" >> terraform/terraform.tfvars
+              echo "password = \"${{ secrets.RDS_PASSWORD }}\"" >> terraform/terraform.tfvars
+              echo "iam_role = \"GitHubTerraformDeployRole\"" >> terraform/terraform.tfvars
 
       - name: Terraform init
         working-directory: terraform
@@ -44,24 +44,23 @@ jobs:
         working-directory: terraform
         run: terraform validate
 
-      - name: Terraform plan
+      - name: Terraform plan and apply
         working-directory: terraform
-        run: terraform plan -var-file=terraform.tfvars
+        run: |
+              terraform plan -var-file=terraform.tfvars
+              terraform apply -auto-approve -var-file=terraform.tfvars
 
-      - name: Terraform apply
-        working-directory: terraform
-        run: terraform apply -auto-approve -var-file=terraform.tfvars
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'latest'
+         version: 'latest'
 
       - name: Update kubeconfig for EKS
         run: |
-          aws eks update-kubeconfig \
-          --region ap-northeast-1 \
-          --name my-eks-cluster
+                    aws eks update-kubeconfig \
+                    --region ap-northeast-1 \
+                    --name my-eks-cluster
 
       - name: Apply aws-auth ConfigMap
         run: kubectl apply -f k8s/aws-auth.yaml

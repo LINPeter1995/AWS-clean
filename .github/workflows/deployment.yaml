@@ -42,7 +42,6 @@ jobs:
           -var="username=${{ secrets.DB_USERNAME }}" \
           -var="password=${{ secrets.RDS_PASSWORD }}"
 
-
       - name: Terraform validate and apply
         working-directory: terraform
         run: |

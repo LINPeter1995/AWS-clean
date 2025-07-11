@@ -28,14 +28,6 @@ jobs:
         with:
           terraform_version: 1.8.3
 
-      - name: Create terraform.tfvars from secrets
-        run: |
-          mkdir -p terraform
-          echo "db_name  = \"${{ secrets.DB_NAME }}\"" > terraform/terraform.tfvars
-          echo "username = \"${{ secrets.DB_USERNAME }}\"" >> terraform/terraform.tfvars
-              echo "password = \"${{ secrets.RDS_PASSWORD }}\"" >> terraform/terraform.tfvars
-              echo "iam_role = \"GitHubTerraformDeployRole\"" >> terraform/terraform.tfvars
-
       - name: Terraform init
         working-directory: terraform
         run: terraform init
@@ -47,9 +39,8 @@ jobs:
       - name: Terraform plan and apply
         working-directory: terraform
         run: |
-              terraform plan -var-file=terraform.tfvars
-              terraform apply -auto-approve -var-file=terraform.tfvars
-
+              terraform plan 
+              terraform apply -auto-approve
 
       - name: Install kubectl
         uses: azure/setup-kubectl@v3

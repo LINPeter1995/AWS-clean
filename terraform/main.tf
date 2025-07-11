@@ -122,9 +122,9 @@ resource "aws_db_instance" "postgres" {
   engine               = "postgres"
   engine_version       = "15"
   instance_class       = "db.t3.micro"
-  db_name              = var.db_name
-  username             = var.username
-  password             = var.password
+  db_name              = "aws_postgres_db"
+  username             = "aws_postgres_db"
+  password             = "1234"
   parameter_group_name = "default.postgres15"
   skip_final_snapshot  = true
   db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name

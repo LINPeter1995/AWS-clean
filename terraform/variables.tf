@@ -29,15 +29,17 @@ variable "db_name" {
 }
 
 variable "username" {
-  description = "Master username for RDS"
+  description = "The username of the RDS database"
   type        = string
   sensitive   = true
+  default     = "aws_postgres_db"
 }
 
 variable "password" {
-  description = "Master password for RDS"
+  description = "The password of the RDS database"
   type        = string
   sensitive   = true
+  default     = "1234"
 }
 
 
